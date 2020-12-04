@@ -1,27 +1,23 @@
-struct Policy
-    first::Int
-    second::Int
-    c::Char
+function parseRow(r::String)
+    [c == '#' ? 1 : 0 for c in r if c == '#' || c == '.']
 end
 
-struct Row
-    policy::Policy
-    password::String
-end
+const pos = (1,1)
 
-function matchToRow(m)
-    Row(Policy(parse(Int, m[1]), parse(Int, m[2]), first(m[3])), m[4])
-end
-
-function rowIsValid(row::Row)
-    m1 = row.password[row.policy.first] == row.policy.c
-    m2 = row.password[row.policy.second] == row.policy.c
-    xor(m1,m2)
-end
-
-regex = r"^(\d+)-(\d+) ([a-z]): (.*)$"
 lines = readlines(first(ARGS))
-matched = matchToRow.(match.(regex, lines))
+result = parseRow.(lines)
+map = hcat(result...)
+println("map=$map, size = $(size(map))")
+mapw = size(map, 1)
+maph = size(map, 2)
 
-println("row matches=$(rowIsValid.(matched))")
-println("valid rows=$(sum(rowIsValid.(matched)))")
+function checkVector(vector)
+    indexes = [pos .+ (t .* vector) for t in eachindex(result)]
+    indexes = [CartesianIndex(mod1(x, mapw), y) for (x,y) in indexes if y <= maph]
+    sum(map[indexes])
+end
+
+vectors = [(1,1), (3,1), (5,1), (7,1), (1,2)]
+results = checkVector.(vectors)
+
+println("results=$(results), prod=$(prod(results))")
