@@ -18,3 +18,5 @@ end
 
 
 @memoize directlyHolds(rule, bag) = any(x[2] == bag for x in rule)
+
+
