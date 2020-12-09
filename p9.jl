@@ -14,3 +14,19 @@ function validateList(ns, preambleSize)
         end
     end
 end
+
+function walkWindow(ns, target)
+    istart, iend = 1,1
+    while true
+        subwindow = ns[istart:iend]
+        subsum = sum(subwindow)
+        if subsum == target
+            return (maximum(subwindow), minimum(subwindow))
+        elseif subsum < target
+            # grow the window
+            iend += 1
+        elseif subsum > target
+            istart += 1
+        end
+    end
+end
